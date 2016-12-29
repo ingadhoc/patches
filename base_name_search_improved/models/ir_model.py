@@ -51,63 +51,52 @@ def _extend_name_results(self, domain, results, limit):
         results.extend(recs.name_get())
     return results
 
+# TODO move all this to register_hook
 
-class ResPartner(models.Model):
-    _inherit = 'res.partner'
 
-    smart_search = fields.Char(
-        compute='_compute_smart_search',
-        search='_search_smart_search')
+_add_magic_fields_original = models.BaseModel._add_magic_fields
 
-    @api.multi
-    def _compute_smart_search(self):
-        return False
 
-    @api.model
-    def fields_view_get(
-            self, view_id=None, view_type=False, toolbar=False, submenu=False):
-        res = super(ResPartner, self).fields_view_get(
-            view_id=view_id, view_type=view_type, toolbar=toolbar,
-            submenu=submenu)
-        if view_type == 'search' and _get_add_smart_search(self):
-            eview = etree.fromstring(res['arch'])
-            placeholders = eview.xpath("//search/field")
-            if placeholders:
-                placeholder = placeholders[0]
-            else:
-                placeholder = eview.xpath("//search")[0]
-            placeholder.addnext(
-                etree.Element('field', {'name': 'smart_search'}))
-            eview.remove(placeholder)
-            res['arch'] = etree.tostring(eview)
-            res['fields'].update(self.fields_get(['smart_search']))
-        return res
+@api.model
+def _add_magic_fields(self):
+    res = _add_magic_fields_original(self)
 
-    @api.model
-    def _search_smart_search(self, operator, value):
-        enabled = self.env.context.get('name_search_extended', True)
-        name = value
-        if name and enabled and operator in ALLOWED_OPS:
-            exact_fields_names = _get_rec_exact_names(self)
-            for rec_name in exact_fields_names:
-                recs = self.search([(rec_name, '=ilike', name)])
-                if recs:
-                    return [(rec_name, '=ilike', name)]
+    def add(name, field):
+        """ add ``field`` with the given ``name`` if it does not exist yet """
+        if name not in self._fields:
+            self._add_field(name, field)
 
-            all_names = _get_rec_names(self)
-            domain = []
-            for word in name.split(_get_separator(self)):
-                word_domain = []
-                for rec_name in all_names:
-                    word_domain = (
-                        word_domain and ['|'] + word_domain or
-                        word_domain
-                    ) + [(rec_name, operator, word)]
-                domain = (
-                    domain and ['&'] + domain or domain
-                ) + word_domain
-            return domain
-        return []
+    add('smart_search', fields.Char(automatic=True,
+        compute='_compute_smart_search', search='_search_smart_search'))
+    return res
+
+
+models.BaseModel._add_magic_fields = _add_magic_fields
+fields_view_get_original = models.BaseModel.fields_view_get
+
+
+@api.model
+def fields_view_get(
+        self, view_id=None, view_type=False, toolbar=False, submenu=False):
+    res = fields_view_get_original(
+        self, view_id=view_id, view_type=view_type, toolbar=toolbar,
+        submenu=submenu)
+    if view_type == 'search' and _get_add_smart_search(self):
+        eview = etree.fromstring(res['arch'])
+        placeholders = eview.xpath("//search/field")
+        if placeholders:
+            placeholder = placeholders[0]
+        else:
+            placeholder = eview.xpath("//search")[0]
+        placeholder.addnext(
+            etree.Element('field', {'name': 'smart_search'}))
+        eview.remove(placeholder)
+        res['arch'] = etree.tostring(eview)
+        res['fields'].update(self.fields_get(['smart_search']))
+    return res
+
+
+models.BaseModel.fields_view_get = fields_view_get
 
 
 class ModelExtended(models.Model):
@@ -128,7 +117,6 @@ class ModelExtended(models.Model):
         "this results and we don't keep going")
 
     def _register_hook(self, cr, ids=None):
-
         def make_name_search():
 
             @api.model
@@ -202,4 +190,40 @@ class ModelExtended(models.Model):
             Model = self.pool.get(model.model)
             if Model:
                 Model._patch_method('name_search', make_name_search())
+
+        @api.multi
+        def _compute_smart_search(self):
+            return False
+
+        @api.model
+        def _search_smart_search(self, operator, value):
+            enabled = self.env.context.get('name_search_extended', True)
+            name = value
+            if name and enabled and operator in ALLOWED_OPS:
+                exact_fields_names = _get_rec_exact_names(self)
+                for rec_name in exact_fields_names:
+                    recs = self.search([(rec_name, '=ilike', name)])
+                    if recs:
+                        return [(rec_name, '=ilike', name)]
+
+                all_names = _get_rec_names(self)
+                domain = []
+                for word in name.split(_get_separator(self)):
+                    word_domain = []
+                    for rec_name in all_names:
+                        word_domain = (
+                            word_domain and ['|'] + word_domain or
+                            word_domain
+                        ) + [(rec_name, operator, word)]
+                    domain = (
+                        domain and ['&'] + domain or domain
+                    ) + word_domain
+                return domain
+            return []
+        # add methods of computed fields
+        if not hasattr(models.BaseModel, '_compute_smart_search'):
+            models.BaseModel._compute_smart_search = _compute_smart_search
+        if not hasattr(models.BaseModel, '_search_smart_search'):
+            models.BaseModel._search_smart_search = _search_smart_search
+
         return super(ModelExtended, self)._register_hook(cr)
