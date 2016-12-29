@@ -37,6 +37,12 @@ def _get_add_smart_search(self):
         [('model', '=', str(self._model))]).add_smart_search
 
 
+@tools.ormcache(skiparg=0)
+def _get_separator(self):
+    return self.env['ir.config_parameter'].get_param(
+        'base_name_search_improved.separator', default=" ")
+
+
 def _extend_name_results(self, domain, results, limit):
     result_count = len(results)
     if result_count < limit:
@@ -79,9 +85,6 @@ class ResPartner(models.Model):
 
     @api.model
     def _search_smart_search(self, operator, value):
-        # recs = self.name_search(
-        #     name=value, operator=operator)
-        # return [('id', 'in', recs)]
         enabled = self.env.context.get('name_search_extended', True)
         name = value
         if name and enabled and operator in ALLOWED_OPS:
@@ -93,7 +96,7 @@ class ResPartner(models.Model):
 
             all_names = _get_rec_names(self)
             domain = []
-            for word in name.split(','):
+            for word in name.split(_get_separator(self)):
                 word_domain = []
                 for rec_name in all_names:
                     word_domain = (
@@ -105,9 +108,6 @@ class ResPartner(models.Model):
                 ) + word_domain
             return domain
         return []
-        # base_domain = args or []
-        # base_domain = []
-        # name = value
 
 
 class ModelExtended(models.Model):
@@ -165,18 +165,22 @@ class ModelExtended(models.Model):
                         domain = [(rec_name, operator, name.replace(' ', '%'))]
                         res = _extend_name_results(
                             self, base_domain + domain, res, limit)
+
+                    # we change this one for the next one
                     # Try unordered word search on each of the search fields
-                    for rec_name in all_names:
-                        domain = [(rec_name, operator, x)
-                                  for x in name.split() if x]
-                        res = _extend_name_results(
-                            self, base_domain + domain, res, limit)
+                    # for rec_name in all_names:
+                    #     domain = [(rec_name, operator, x)
+                    #               for x in name.split() if x]
+                    #     res = _extend_name_results(
+                    #         self, base_domain + domain, res, limit)
+
                     # Try unordered word search on each of the search fields
                     # we only perform this search if we have at least one
                     # split character
-                    if ',' in name:
+                    separator = _get_separator(self)
+                    if separator in name:
                         domain = []
-                        for word in name.split(','):
+                        for word in name.split(separator):
                             word_domain = []
                             for rec_name in all_names:
                                 word_domain = (
