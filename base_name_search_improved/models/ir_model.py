@@ -2,10 +2,12 @@
 # © 2016 Daniel Reis
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api
+from openerp import models, fields, api, _
 from openerp import SUPERUSER_ID
 from openerp import tools
 from lxml import etree
+from ast import literal_eval
+from openerp.exceptions import ValidationError
 
 # Extended name search is only used on some operators
 ALLOWED_OPS = set(['ilike', 'like'])
@@ -35,6 +37,14 @@ def _get_add_smart_search(self):
     "Add Smart Search on search views"
     return self.env['ir.model'].search(
         [('model', '=', str(self._model))]).add_smart_search
+
+
+@tools.ormcache(skiparg=0)
+def _get_name_search_domain(self):
+    "Add Smart Search on search views"
+    name_search_domain = self.env['ir.model'].search(
+        [('model', '=', str(self._model))]).name_search_domain
+    return name_search_domain and literal_eval(name_search_domain) or []
 
 
 @tools.ormcache(skiparg=0)
@@ -115,6 +125,21 @@ class ModelExtended(models.Model):
         string='Name Search Exact Fields',
         help="If we found exact matches for this fields then we return only "
         "this results and we don't keep going")
+    name_search_domain = fields.Char()
+
+    @api.multi
+    @api.constrains('name_search_domain')
+    def check_name_search_domain(self):
+        for rec in self:
+            if rec.name_search_domain:
+                name_search_domain = False
+                try:
+                    name_search_domain = literal_eval(rec.name_search_domain)
+                except:
+                    pass
+                if not isinstance(name_search_domain, list):
+                    raise ValidationError(_(
+                        'Name Search Domain must be a list of tuples'))
 
     def _register_hook(self, cr, ids=None):
         def make_name_search():
@@ -123,13 +148,16 @@ class ModelExtended(models.Model):
             def name_search(self, name='', args=None,
                             operator='ilike', limit=100):
                 enabled = self.env.context.get('name_search_extended', True)
+                if enabled:
+                    # we add domain
+                    args = args + _get_name_search_domain(self)
 
                 # first we search for an exact match, if we found any, we
                 # return it
                 if name and enabled and operator in ALLOWED_OPS:
                     exact_fields_names = _get_rec_exact_names(self)
                     for rec_name in exact_fields_names:
-                        recs = self.search([(rec_name, '=ilike', name)])
+                        recs = self.search(args + [(rec_name, '=ilike', name)])
                         if recs:
                             return recs.name_get()
 
@@ -143,6 +171,7 @@ class ModelExtended(models.Model):
                     # Support a list of fields to search on
                     all_names = _get_rec_names(self)
                     base_domain = args or []
+                    # base_domain = args or []
                     # Try regular search on each additional search field
                     for rec_name in all_names[1:]:
                         domain = [(rec_name, operator, name)]
@@ -207,7 +236,8 @@ class ModelExtended(models.Model):
                         return [(rec_name, '=ilike', name)]
 
                 all_names = _get_rec_names(self)
-                domain = []
+                # domain =  []
+                domain = _get_name_search_domain(self)
                 for word in name.split(_get_separator(self)):
                     word_domain = []
                     for rec_name in all_names:
