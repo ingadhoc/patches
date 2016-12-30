@@ -44,7 +44,9 @@ def _get_name_search_domain(self):
     "Add Smart Search on search views"
     name_search_domain = self.env['ir.model'].search(
         [('model', '=', str(self._model))]).name_search_domain
-    return name_search_domain and literal_eval(name_search_domain) or []
+    if name_search_domain:
+        return literal_eval(name_search_domain)
+    return []
 
 
 @tools.ormcache(skiparg=0)
@@ -71,42 +73,15 @@ _add_magic_fields_original = models.BaseModel._add_magic_fields
 def _add_magic_fields(self):
     res = _add_magic_fields_original(self)
 
-    def add(name, field):
-        """ add ``field`` with the given ``name`` if it does not exist yet """
-        if name not in self._fields:
-            self._add_field(name, field)
-
-    add('smart_search', fields.Char(automatic=True,
-        compute='_compute_smart_search', search='_search_smart_search'))
+    if 'base_name_search_improved' in self.env.registry._init_modules:
+        if 'smart_search' not in self._fields:
+            self._add_field('smart_search', fields.Char(
+                automatic=True, compute='_compute_smart_search',
+                search='_search_smart_search'))
     return res
 
 
 models.BaseModel._add_magic_fields = _add_magic_fields
-fields_view_get_original = models.BaseModel.fields_view_get
-
-
-@api.model
-def fields_view_get(
-        self, view_id=None, view_type=False, toolbar=False, submenu=False):
-    res = fields_view_get_original(
-        self, view_id=view_id, view_type=view_type, toolbar=toolbar,
-        submenu=submenu)
-    if view_type == 'search' and _get_add_smart_search(self):
-        eview = etree.fromstring(res['arch'])
-        placeholders = eview.xpath("//search/field")
-        if placeholders:
-            placeholder = placeholders[0]
-        else:
-            placeholder = eview.xpath("//search")[0]
-        placeholder.addnext(
-            etree.Element('field', {'name': 'smart_search'}))
-        eview.remove(placeholder)
-        res['arch'] = etree.tostring(eview)
-        res['fields'].update(self.fields_get(['smart_search']))
-    return res
-
-
-models.BaseModel.fields_view_get = fields_view_get
 
 
 class ModelExtended(models.Model):
@@ -150,7 +125,7 @@ class ModelExtended(models.Model):
                 enabled = self.env.context.get('name_search_extended', True)
                 if enabled:
                     # we add domain
-                    args = args + _get_name_search_domain(self)
+                    args = args or [] + _get_name_search_domain(self)
 
                 # first we search for an exact match, if we found any, we
                 # return it
@@ -213,12 +188,39 @@ class ModelExtended(models.Model):
                 return res
             return name_search
 
-        if ids is None:
-            ids = self.search(cr, SUPERUSER_ID, [])
-        for model in self.browse(cr, SUPERUSER_ID, ids):
-            Model = self.pool.get(model.model)
-            if Model:
-                Model._patch_method('name_search', make_name_search())
+        def patch_fields_view_get():
+            @api.model
+            def fields_view_get(
+                    self, view_id=None, view_type=False, toolbar=False,
+                    submenu=False):
+                res = fields_view_get.origin(
+                    self, view_id=view_id, view_type=view_type,
+                    toolbar=toolbar, submenu=submenu)
+                if view_type == 'search' and _get_add_smart_search(self):
+                    eview = etree.fromstring(res['arch'])
+                    placeholders = eview.xpath("//search/field")
+                    if placeholders:
+                        placeholder = placeholders[0]
+                    else:
+                        placeholder = eview.xpath("//search")[0]
+                    placeholder.addnext(
+                        etree.Element('field', {'name': 'smart_search'}))
+                    eview.remove(placeholder)
+                    res['arch'] = etree.tostring(eview)
+                    res['fields'].update(self.fields_get(['smart_search']))
+                return res
+            return fields_view_get
+
+        # def patch_add_magic_fields():
+        #     @api.model
+        #     def _add_magic_fields(self):
+        #         res = _add_magic_fields.origin(self)
+        #         if 'smart_search' not in self._fields:
+        #             self._add_field('smart_search', fields.Char(
+        #                 automatic=True, compute='_compute_smart_search',
+        #                 search='_search_smart_search'))
+        #         return res
+        #     return _add_magic_fields
 
         @api.multi
         def _compute_smart_search(self):
@@ -250,10 +252,25 @@ class ModelExtended(models.Model):
                     ) + word_domain
                 return domain
             return []
+
         # add methods of computed fields
         if not hasattr(models.BaseModel, '_compute_smart_search'):
             models.BaseModel._compute_smart_search = _compute_smart_search
         if not hasattr(models.BaseModel, '_search_smart_search'):
             models.BaseModel._search_smart_search = _search_smart_search
+
+        if ids is None:
+            ids = self.search(cr, SUPERUSER_ID, [])
+        for model in self.browse(cr, SUPERUSER_ID, ids):
+            Model = self.pool.get(model.model)
+            if Model:
+                Model._patch_method(
+                    'name_search', make_name_search())
+                Model._patch_method(
+                    'fields_view_get', patch_fields_view_get())
+                # TODO improove this, not sure why but it dones works when
+                # patching this way
+                # Model._patch_method(
+                #     '_add_magic_fields', patch_add_magic_fields())
 
         return super(ModelExtended, self)._register_hook(cr)
