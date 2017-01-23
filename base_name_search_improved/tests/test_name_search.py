@@ -14,6 +14,11 @@ class NameSearchCase(TransactionCase):
         phone_field = self.env.ref('base.field_res_partner_phone')
         model_partner = self.env.ref('base.model_res_partner')
         model_partner.name_search_ids = phone_field
+        model_partner.add_smart_search = True
+
+        # this use does not make muche sense but with base module we dont have
+        # much models to use for tests
+        model_partner.name_search_domain = "[('parent_id', '=', False)]"
         self.Partner = self.env['res.partner']
         self.partner1 = self.Partner.create(
             {'name': 'Luigi Verconti',
@@ -43,7 +48,17 @@ class NameSearchCase(TransactionCase):
 
     def test_NameSearchMustMatchAllWords(self):
         """Must Match All Words"""
+        res = self.Partner.name_search('ulm aaa 555 777')
+        self.assertFalse(res)
+
+    def test_NameSearchDifferentFields(self):
+        """Must Match All Words"""
         res = self.Partner.name_search('ulm 555 777')
+        self.assertEqual(len(res), 1)
+
+    def test_NameSearchDomain(self):
+        """Must not return a partner with parent"""
+        res = self.Partner.name_search('Edward Foster')
         self.assertFalse(res)
 
     def test_MustHonorDomain(self):
