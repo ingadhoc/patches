@@ -35,6 +35,9 @@ class ReportXml(models.Model):
 
     _inherit = 'ir.actions.report.xml'
 
+    printing_copies = fields.Integer(
+        string='Number of Copies',
+    )
     property_printing_action = fields.Many2one(
         comodel_name='printing.action',
         string='Action',

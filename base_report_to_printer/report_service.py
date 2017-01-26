@@ -68,7 +68,8 @@ def exp_report_get(db, uid, report_id):
                                                self_reports
                                                [report_id]['result'],
                                                self_reports
-                                               [report_id]['format'])
+                                               [report_id]['format'],
+                                               copies=report.printing_copies or 1)
                         # FIXME "Warning" removed as it breaks the workflow
                         # it would be interesting to have a dialog box to
                         # confirm if we really want to print in this case it
