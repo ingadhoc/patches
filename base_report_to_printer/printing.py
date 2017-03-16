@@ -131,7 +131,13 @@ class PrintingPrinter(models.Model):
         Format could be pdf, qweb-pdf, raw, ...
 
         """
-        self.ensure_one()
+        # we ensure manually because if we raise a warning interface is broken
+        # self.ensure_one()
+        if len(self) != 1:
+            _logger.error(
+                'Base report to printer called with %s but singleton is'
+                'expeted. Check printers configuration.' % self)
+            return True
         fd, file_name = mkstemp()
         try:
             os.write(fd, content)
@@ -145,11 +151,11 @@ class PrintingPrinter(models.Model):
             connection = cups.Connection(CUPS_HOST, CUPS_PORT)
             _logger.debug('Connection to CUPS successfull')
         except:
-            raise Warning(
-                _("Failed to connect to the CUPS server on %s:%s. "
-                    "Check that the CUPS server is running and that "
-                    "you can reach it from the Odoo server.")
-                % (CUPS_HOST, CUPS_PORT))
+            _logger.error(
+                "Failed to connect to the CUPS server on %s:%s. "
+                "Check that the CUPS server is running and that "
+                "you can reach it from the Odoo server." % (
+                    CUPS_HOST, CUPS_PORT))
 
         options = self.print_options(report, format, copies)
 
