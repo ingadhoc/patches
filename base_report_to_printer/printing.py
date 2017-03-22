@@ -25,8 +25,8 @@
 import os
 from tempfile import mkstemp
 
-from openerp import models, fields, api, _
-from openerp.exceptions import Warning
+from openerp import models, fields, api
+# from openerp.exceptions import Warning
 from openerp.tools.config import config
 
 import logging
