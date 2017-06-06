@@ -35,6 +35,8 @@ class ReportXml(models.Model):
 
     _inherit = 'ir.actions.report.xml'
 
+    # este campo en realidad no lo estamos usando por ahora porque con gcp no
+    # sabemos como mandarlo, por ahora usamos copies que es de aeroo
     printing_copies = fields.Integer(
         string='Number of Copies',
     )
