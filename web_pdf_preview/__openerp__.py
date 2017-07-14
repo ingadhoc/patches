@@ -20,30 +20,14 @@
 
 {
     "name": "Web PDF Report Preview & Print",
-    'version': '1.0',
+    'version': '9.0.1.0.0',
     'category': 'Web',
-    'description': """Web PDF Report Preview & Print
-
-Preview & Print PDF report in your browser.
-
-* For IE, Adobe Reader is required.
-* For Chrome , nothing is requried.
-* For Firefox, Adobe Reader is required.
-
-
-If your brower prevented pop-up window, you should allow it.
-
-功能：PDF 报表预览
-
-    """,
-    'author': 'wangbuke@gmail.com',
+    'author': 'wangbuke@gmail.com,ADHOC SA',
     'website': 'http://buke.github.io',
     'license': 'AGPL-3',
-    'depends': ['web'],
+    'depends': ['report_custom_filename'],
     'data': [
         'views/web_pdf_preview.xml',
     ],
 
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

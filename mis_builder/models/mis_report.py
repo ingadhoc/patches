@@ -811,7 +811,7 @@ class MisReport(models.Model):
             'avg': _avg,
             'time': time,
             'datetime': datetime,
-            'dateutil': dateutil,            
+            'dateutil': dateutil,
             'AccountingNone': AccountingNone,
             'SimpleArray': SimpleArray,
         }

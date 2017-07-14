@@ -87,68 +87,40 @@ ActionManager.include({
                 (wkhtmltopdf_state = wkhtmltopdf_state || session.rpc('/report/check_wkhtmltopdf')).then(function (presence) {
                     // Fallback on html if wkhtmltopdf is not installed or if OpenERP is started with one worker
                     if (presence === 'install') {
-                        self.do_notify(_t('Report'), _t('Unable to find Wkhtmltopdf on this \
-system. The report will be shown in html.<br><br><a href="http://wkhtmltopdf.org/" target="_blank">\
-wkhtmltopdf.org</a>'), true);
+                        self.do_notify(_t('Report'), _t('Unable to find Wkhtmltopdf on this ' +
+'system. The report will be shown in html.<br><br><a href="http://wkhtmltopdf.org/" target="_blank">' +
+'wkhtmltopdf.org</a>'), true);
                         report_url = report_url.substring(12);
                         window.open('/report/html/' + report_url, '_blank', 'height=768,width=1024');
                         framework.unblockUI();
                         return;
                     } else if (presence === 'workers') {
-                        self.do_notify(_t('Report'), _t('You need to start OpenERP with at least two \
-workers to print a pdf version of the reports.'), true);
+                        self.do_notify(_t('Report'), _t('You need to start OpenERP with at least two ' +
+'workers to print a pdf version of the reports.'), true);
                         report_url = report_url.substring(12);
                         window.open('/report/html/' + report_url, '_blank', 'height=768,width=1024');
                         framework.unblockUI();
                         return;
                     } else if (presence === 'upgrade') {
-                        self.do_notify(_t('Report'), _t('You should upgrade your version of\
-Wkhtmltopdf to at least 0.12.0 in order to get a correct display of headers and footers as well as\
-support for table-breaking between pages.<br><br><a href="http://wkhtmltopdf.org/" \
-target="_blank">wkhtmltopdf.org</a>'), true);
+                        self.do_notify(_t('Report'), _t('You should upgrade your version of ' +
+'Wkhtmltopdf to at least 0.12.0 in order to get a correct display of headers and footers as well as ' +
+'support for table-breaking between pages.<br><br><a href="http://wkhtmltopdf.org/"' +
+'target="_blank">wkhtmltopdf.org</a>'), true);
                     }
                     return trigger_download(self.session, response, c, action, options);
                 });
             } else if (action.report_type === 'controller') {
-                return trigger_download(self.session, response, c, action, options);
-            }                     
+                return trigger_download(self, response, c);
+            }           
         } else {
-            var eval_contexts = ([session.user_context] || []).concat([action.context]);
-            action.context = pyeval.eval('contexts',eval_contexts);
-
-            // iOS devices doesn't allow iframe use the way we do it,
-            // opening a new window seems the best way to workaround
-            if (navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
-                var params = {
-                    action: JSON.stringify(action),
-                    token: new Date().getTime()
-                };
-                var url = self.session.url('/web/report', params);
-                framework.unblockUI();
-                $('<a href="'+url+'" target="_blank"></a>')[0].click();
-                return;
-            }
-            var c = crash_manager;
-            return $.Deferred(function (d) {
-                self.session.get_file({
-                    url: '/web/report',
-                    data: {action: JSON.stringify(action)},
-                    complete: framework.unblockUI,
-                    success: function(){
-                        if (!self.dialog) {
-                            options.on_close();
-                        }
-                        self.dialog_stop();
-                        d.resolve();
-                    },
-                    error: function () {
-                        c.rpc_error.apply(c, arguments);
-                        d.reject();
-                    }
-                });
-            });
-
-            //return self._super(action, options);
+            var params = {
+                action: JSON.stringify(action),
+                token: new Date().getTime()
+            };
+            var url = self.session.url('/web/report', params);
+            window.open(url, 'report', '');
+            framework.unblockUI();
+            return;
         }
     }
 });

@@ -7,7 +7,10 @@
 
 Odoo patches, fixes, modules overwrite and other stuff that should be deleted :) Edit
 
-web_pdf_preview: backport from https://bitbucket.org/biosbillingsoftware/odoo-web-pdf-preview-print/overview
+web_pdf_preview:
+    * backport from https://bitbucket.org/biosbillingsoftware/odoo-web-pdf-preview-print/overview
+    * con algunos cambios en js para que no de error
+    * con dependencia con report_custom_filename para que no de error y tmb para que no mande a descargar si custom file name
 
 [//]: # (addons)
 This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
