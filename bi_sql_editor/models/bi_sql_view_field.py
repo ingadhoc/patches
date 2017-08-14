@@ -29,6 +29,12 @@ class BiSQLViewField(models.Model):
         ('measure', 'Measure'),
     ]
 
+    _TREE_VISIBILITY_SELECTION = [
+        ('unavailable', 'Unavailable'),
+        ('hidden', 'Hidden'),
+        ('available', 'Available'),
+    ]
+
     # Mapping to guess Odoo field type, from SQL column type
     _SQL_MAPPING = {
         'boolean': 'boolean',
@@ -68,13 +74,17 @@ class BiSQLViewField(models.Model):
     graph_type = fields.Selection(
         string='Graph Type', selection=_GRAPH_TYPE_SELECTION)
 
+    tree_visibility = fields.Selection(
+        string='Tree Visibility', selection=_TREE_VISIBILITY_SELECTION,
+        default='available', required=True)
+
     field_description = fields.Char(
         string='Field Description', help="This will be used as the name"
         " of the Odoo field, displayed for users")
 
     ttype = fields.Selection(
         string='Field Type', selection=_TTYPE_SELECTION, help="Type of the"
-        " Odoo field that will be created. Let empty if you don't want to"
+        " Odoo field that will be created. Keep empty if you don't want to"
         " create a new field. If empty, this field will not be displayed"
         " neither available for search or group by function")
 
@@ -88,7 +98,7 @@ class BiSQLViewField(models.Model):
     many2one_model_id = fields.Many2one(
         comodel_name='ir.model', string='Model',
         help="For 'Many2one' Odoo field.\n"
-        " Co Model of the field.")
+        " Comodel of the field.")
 
     # Compute Section
     @api.multi
@@ -165,6 +175,16 @@ class BiSQLViewField(models.Model):
             'relation': self.ttype == 'many2one' and
             self.many2one_model_id.model or False,
         }
+
+    @api.multi
+    def _prepare_tree_field(self):
+        self.ensure_one()
+        res = ''
+        if self.field_description and self.tree_visibility != 'unavailable':
+            res = """<field name="{}" {}/>""".format(
+                self.name,
+                self.tree_visibility == 'hidden' and 'invisible="1"' or '')
+        return res
 
     @api.multi
     def _prepare_graph_field(self):

@@ -4,6 +4,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import logging
+from datetime import datetime
 from psycopg2 import ProgrammingError
 
 from openerp import _, api, fields, models, SUPERUSER_ID
@@ -26,14 +27,14 @@ class BiSQLView(models.Model):
 
     _STATE_SQL_EDITOR = [
         ('model_valid', 'SQL View and Model Created'),
-        ('ui_valid', 'Graph, action and Menu Created'),
+        ('ui_valid', 'Views, Action and Menu Created'),
     ]
 
     technical_name = fields.Char(
         string='Technical Name', required=True,
-        help="Suffix of the SQL view. (SQL full name will be computed and"
-        " prefixed by 'x_bi_sql_view_'. Should have correct"
-        "syntax. For more information, see https://www.postgresql.org/"
+        help="Suffix of the SQL view. SQL full name will be computed and"
+        " prefixed by 'x_bi_sql_view_'. Syntax should follow: "
+        "https://www.postgresql.org/"
         "docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS")
 
     view_name = fields.Char(
@@ -57,6 +58,14 @@ class BiSQLView(models.Model):
         help="Size of the materialized view and its indexes")
 
     state = fields.Selection(selection_add=_STATE_SQL_EDITOR)
+
+    view_order = fields.Char(string='View Order',
+                             required=True,
+                             readonly=False,
+                             states={'ui_valid': [('readonly', True)]},
+                             default="pivot,graph,tree",
+                             help='Comma-separated text. Possible values:'
+                                  ' "graph", "pivot" or "tree"')
 
     query = fields.Text(
         help="SQL Request that will be inserted as the view. Take care to :\n"
@@ -86,6 +95,9 @@ class BiSQLView(models.Model):
     model_id = fields.Many2one(
         string='Odoo Model', comodel_name='ir.model', readonly=True)
 
+    tree_view_id = fields.Many2one(
+        string='Odoo Tree View', comodel_name='ir.ui.view', readonly=True)
+
     graph_view_id = fields.Many2one(
         string='Odoo Graph View', comodel_name='ir.ui.view', readonly=True)
 
@@ -108,6 +120,16 @@ class BiSQLView(models.Model):
 
     rule_id = fields.Many2one(
         string='Odoo Rule', comodel_name='ir.rule', readonly=True)
+
+    @api.constrains('view_order')
+    @api.multi
+    def _check_view_order(self):
+        for rec in self:
+            if rec.view_order:
+                for vtype in rec.view_order.split(','):
+                    if vtype not in ('graph', 'pivot', 'tree'):
+                        raise UserError(_(
+                            'Only graph, pivot or tree views are supported'))
 
     # Compute Section
     @api.depends('is_materialized')
@@ -144,7 +166,7 @@ class BiSQLView(models.Model):
             ('state', 'not in', ('draft', 'sql_valid'))])
         if non_draft_views:
             raise UserError(_("You can only unlink draft views"))
-        return self.unlink()
+        return super(BiSQLView, self).unlink()
 
     @api.multi
     def copy(self, default=None):
@@ -181,22 +203,26 @@ class BiSQLView(models.Model):
         for sql_view in self:
             if sql_view.state in ('model_valid', 'ui_valid'):
                 # Drop SQL View (and indexes by cascade)
-                sql_view._drop_view()
+                if sql_view.is_materialized:
+                    sql_view._drop_view()
 
                 # Drop ORM
                 sql_view._drop_model_and_fields()
 
+            sql_view.tree_view_id.unlink()
             sql_view.graph_view_id.unlink()
             sql_view.pivot_view_id.unlink()
+            sql_view.search_view_id.unlink()
             sql_view.action_id.unlink()
             sql_view.menu_id.unlink()
-            sql_view.rule_id.unlink()
             if sql_view.cron_id:
                 sql_view.cron_id.unlink()
             sql_view.write({'state': 'draft', 'has_group_changed': False})
 
     @api.multi
     def button_create_ui(self):
+        self.tree_view_id = self.env['ir.ui.view'].create(
+            self._prepare_tree_view()).id
         self.graph_view_id = self.env['ir.ui.view'].create(
             self._prepare_graph_view()).id
         self.pivot_view_id = self.env['ir.ui.view'].create(
@@ -225,8 +251,7 @@ class BiSQLView(models.Model):
             'type': 'ir.actions.act_window',
             'res_model': self.model_id.model,
             'search_view_id': self.search_view_id.id,
-            'view_type': 'form',
-            'view_mode': 'graph,pivot',
+            'view_mode': self.action_id.view_mode,
         }
 
     # Prepare Function
@@ -283,6 +308,21 @@ class BiSQLView(models.Model):
         }
 
     @api.multi
+    def _prepare_tree_view(self):
+        self.ensure_one()
+        return {
+            'name': self.name,
+            'type': 'tree',
+            'model': self.model_id.model,
+            'arch':
+                """<?xml version="1.0"?>"""
+                """<tree string="Analysis">{}"""
+                """</tree>""".format("".join(
+                    [x._prepare_tree_field()
+                        for x in self.bi_sql_view_field_ids]))
+        }
+
+    @api.multi
     def _prepare_graph_view(self):
         self.ensure_one()
         return {
@@ -335,12 +375,20 @@ class BiSQLView(models.Model):
     @api.multi
     def _prepare_action(self):
         self.ensure_one()
+        view_mode = self.view_order
+        first_view = view_mode.split(',')[0]
+        if first_view == 'tree':
+            view_id = self.tree_view_id.id
+        elif first_view == 'pivot':
+            view_id = self.pivot_view_id.id
+        else:
+            view_id = self.graph_view_id.id
         return {
             'name': self.name,
             'res_model': self.model_id.model,
             'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'graph,pivot',
+            'view_mode': view_mode,
+            'view_id': view_id,
             'search_view_id': self.search_view_id.id,
         }
 
@@ -416,7 +464,10 @@ class BiSQLView(models.Model):
     @api.multi
     def _drop_model_and_fields(self):
         for sql_view in self:
-            sql_view.model_id.unlink()
+            if sql_view.rule_id:
+                sql_view.rule_id.unlink()
+            if sql_view.model_id:
+                sql_view.model_id.unlink()
 
     @api.multi
     def _hook_executed_request(self):
@@ -500,10 +551,17 @@ class BiSQLView(models.Model):
     @api.multi
     def _refresh_materialized_view(self):
         for sql_view in self:
-            req = "REFRESH %s VIEW %s" % (
-                sql_view.materialized_text, sql_view.view_name)
-            self._log_execute(req)
-            sql_view._refresh_size()
+            if sql_view.is_materialized:
+                req = "REFRESH %s VIEW %s" % (
+                    sql_view.materialized_text, sql_view.view_name)
+                self._log_execute(req)
+                sql_view._refresh_size()
+                if sql_view.action_id:
+                    # Alter name of the action, to display last refresh
+                    # datetime of the materialized view
+                    sql_view.action_id.name = "%s (%s)" % (
+                        self.name,
+                        datetime.utcnow().strftime(_("%m/%d/%Y %H:%M:%S UTC")))
 
     @api.multi
     def _refresh_size(self):
@@ -517,4 +575,4 @@ class BiSQLView(models.Model):
     def button_preview_sql_expression(self):
         self.button_validate_sql_expression()
         res = self._execute_sql_request()
-        raise UserError('\n'.join(map(lambda x: str(x), res)))
+        raise UserError('\n'.join(map(lambda x: str(x), res[:100])))
