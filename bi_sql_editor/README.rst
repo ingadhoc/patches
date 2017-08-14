@@ -77,7 +77,8 @@ To configure this module, you need to:
 * Click on the button 'Create SQL View, Indexes and Models'. (this step could
   take a while, if view is materialized)
 
-* If it's a MATERIALIZED view: 
+* If it's a MATERIALIZED view:
+
     * a cron task is created to refresh
       the view. You can so define the frequency of the refresh.
     * the size of view (and the indexes is displayed)
@@ -93,9 +94,9 @@ Usage
 
 To use this module, you need to:
 
-* Go to 'Reporting' / 'Custom Reports' 
+#. Go to 'Reporting' / 'Custom Reports'
 
-* select the desired report
+#. Select the desired report
 
   .. figure:: /bi_sql_editor/static/description/05_reporting_pivot.png
      :width: 800 px
@@ -114,17 +115,17 @@ Known issues / Roadmap
 
 * Add 'interval', after type (row/col/measure) field for date(time) fields.
 
-* Dynamically change displayed action name to mention the last refresh of the
-  materialized view.
-
-* Create ir.rule to limit access. (for company_id for exemple)
-
 Note
 ====
 
-The syntax of the sql request has the following constrains:
+* If the view is materialized, the name of the action will contain the date
+  and the time of it last refresh:
 
-* the name of the selectable columns should be prefixed by `x_`
+  .. figure:: /bi_sql_editor/static/description/06_action_datetime_name.png
+     :width: 800 px
+
+* The syntax of the sql request has the following constrains: the name of the
+  selectable columns should be prefixed by `x_`
 
 Sample:
 
