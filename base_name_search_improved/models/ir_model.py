@@ -128,7 +128,8 @@ class ModelExtended(models.Model):
                     # Try unordered word search on each of the search fields
                     # we only perform this search if we have at least one
                     # separator character
-                    if " " in name:
+                    # also, if have raise the limit we skeep this iteration
+                    if " " in name and len(res) < limit:
                         domain = []
                         for word in name.split():
                             word_domain = []
@@ -175,6 +176,15 @@ class ModelExtended(models.Model):
 
         @api.model
         def _search_smart_search(self, operator, value):
+            """
+            Por ahora este método no llama a
+            self.name_search(name, operator=operator) ya que este no es tan
+            performante si se llama a ilimitados registros que es lo que el
+            name search debe devolver. Por eso se reimplementa acá nuevamente.
+            Además name_search tiene una lógica por la cual trata de devolver
+            primero los que mejor coinciden, en este caso eso no es necesario
+            Igualmente seguro se puede mejorar y unificar bastante código
+            """
             enabled = self.env.context.get('name_search_extended', True)
             name = value
             if name and enabled and operator in ALLOWED_OPS:
