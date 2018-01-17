@@ -1,3 +1,4 @@
 reporting-engine
 server-tools
 web
+ingadhoc-odoo-argentina https://github.com/ingadhoc/odoo-argentina
