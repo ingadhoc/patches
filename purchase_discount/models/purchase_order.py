@@ -105,12 +105,16 @@ class PurchaseOrderLine(models.Model):
         price_unit = False
         price = self._get_discounted_price_unit()
         if price != self.price_unit:
+            # Parche de ADHOC. Por temas de performance sacamos el = 'purchase'
+            # de abajo y entonces tmb sacamos esto ya que no es necesario.
+            # ademas probamos poner if self.order_id.state != 'purchase' abajo
+            # pero no ayudo mucho
             # Only change value if it's different
-            self.order_id.state = 'draft'
+            # self.order_id.state = 'draft'
             price_unit = self.price_unit
             self.price_unit = price
         price = super(PurchaseOrderLine, self)._get_stock_move_price_unit()
         if price_unit:
             self.price_unit = price_unit
-            self.order_id.state = 'purchase'
+            # self.order_id.state = 'purchase'
         return price
