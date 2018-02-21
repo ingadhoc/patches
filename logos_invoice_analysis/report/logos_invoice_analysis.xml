@@ -116,7 +116,7 @@
             <field name="name">Analisis de Factura de Logos</field>
             <field name="res_model">account.invoice.line.report_logos</field>
             <field name="view_type">form</field>
-            <field name="view_mode">tree,graph</field>
+            <field name="view_mode">tree,graph,pivot</field>
             <field name="context">{}</field>
         </record>
 
