@@ -18,6 +18,9 @@ web_m2x_options:
 purchase_discount:
     tiene algunos backports de v10 y tmb le comentamos parte de codigo por tema de performance (buscar "Parche de ADHOC.")
 
+sale_exception:
+    modificada linea "# @api.constrains('ignore_exception', 'order_line', 'state')". TODO llevar en PR a oca una vez que validemos que va ok
+
 [//]: # (addons)
 This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
 [//]: # (end addons)
