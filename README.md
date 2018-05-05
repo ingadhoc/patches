@@ -1,6 +1,6 @@
-[![Runbot Status](http://runbot.adhoc.com.ar/runbot/badge/flat/37/9.0.svg)](http://runbot.adhoc.com.ar/runbot/repo/github-com-ingadhoc-patches-37)
-[![Build Status](https://travis-ci.org/ingadhoc/patches.svg?branch=9.0)](https://travis-ci.org/ingadhoc/patches)
-[![Coverage Status](https://coveralls.io/repos/ingadhoc/patches/badge.png?branch=9.0)](https://coveralls.io/r/ingadhoc/patches?branch=9.0)
+[![Runbot Status](http://runbot.adhoc.com.ar/runbot/badge/flat/37/11.0.svg)](http://runbot.adhoc.com.ar/runbot/repo/github-com-ingadhoc-patches-37)
+[![Build Status](https://travis-ci.org/ingadhoc/patches.svg?branch=11.0)](https://travis-ci.org/ingadhoc/patches)
+[![Coverage Status](https://coveralls.io/repos/ingadhoc/patches/badge.png?branch=11.0)](https://coveralls.io/r/ingadhoc/patches?branch=11.0)
 [![Code Climate](https://codeclimate.com/github/ingadhoc/patches/badges/gpa.svg)](https://codeclimate.com/github/ingadhoc/patches)
 
 # ADHOC Odoo Patches
@@ -22,7 +22,6 @@ sale_exception:
     modificada linea "# @api.constrains('ignore_exception', 'order_line', 'state')". TODO llevar en PR a oca una vez que validemos que va ok
 
 [//]: # (addons)
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
 [//]: # (end addons)
 
 ----
