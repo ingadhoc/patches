@@ -17,7 +17,7 @@
 <!--You should have received a copy of the GNU Affero General Public License-->
 <!--along with this program.  If not, see <http://www.gnu.org/licenses/>.   -->
 <!-- ********************************************************************** -->
-<openerp>
+<odoo>
     <data>
 
         <menuitem id="menu_res_authentication_attempt" 
@@ -29,4 +29,4 @@
             action="action_res_banned_remote"/>
 
     </data>
-</openerp>
+</odoo>

@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 # © 2016 Serpent Consulting Services Pvt. Ltd. (support@serpentcs.com)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import ast
 
-from openerp.tests import common
-from openerp.modules import registry
-from openerp.addons.mass_editing.hooks import uninstall_hook
+from odoo.tests import common
+from odoo.modules import registry
+from odoo.addons.mass_editing.hooks import uninstall_hook
 
 
 class TestMassEditing(common.TransactionCase):

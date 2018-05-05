@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # © 2016 ACSONE SA/NV (<http://acsone.eu>)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-import openerp.tests.common as common
+import odoo.tests.common as common
 
 from ..models.accounting_none import AccountingNone
 from ..models.mis_report_style import (

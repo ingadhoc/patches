@@ -1,5 +1,5 @@
  #-*- coding: utf-8 -*-
-from openerp import fields, models, api
+from odoo import fields, models, api
 
 
 class project_task_payment(models.Model):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (c) 2009 Albert Cervera i Areny <albert@nan-tic.com>
@@ -21,9 +20,9 @@
 #
 ##############################################################################
 
-from openerp.exceptions import Warning
-from openerp import models, api, _
-from openerp.tools.config import config
+from odoo.exceptions import Warning
+from odoo import models, api, _
+from odoo.tools.config import config
 
 import logging
 _logger = logging.getLogger(__name__)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 {
     "name": 'web_m2x_options',

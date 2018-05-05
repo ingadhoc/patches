@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (c) 2007 Ferran Pegueroles <ferran@pegueroles.com>
@@ -23,7 +22,7 @@
 ##############################################################################
 import logging
 
-from openerp import models, fields, api
+from odoo import models, fields, api
 
 _logger = logging.getLogger('base_report_to_printer')
 

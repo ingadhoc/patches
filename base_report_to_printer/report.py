@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Author: Guewen Baconnier
@@ -19,7 +18,7 @@
 #
 ##############################################################################
 
-from openerp import models, exceptions, _, api
+from odoo import models, exceptions, _, api
 
 
 class Report(models.Model):

@@ -22,9 +22,9 @@
 
 import logging
 
-from openerp import fields, http, registry, SUPERUSER_ID
-from openerp.http import request
-from openerp.addons.web.controllers.main import Home, ensure_db
+from odoo import fields, http, registry, SUPERUSER_ID
+from odoo.http import request
+from odoo.addons.web.controllers.main import Home, ensure_db
 
 _logger = logging.getLogger(__name__)
 

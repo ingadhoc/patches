@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 # © 2016 Therp BV (<http://therp.nl>)
 # © 2016 ACSONE SA/NV (<http://acsone.eu>)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from openerp import api, fields, models, _
-from openerp.exceptions import UserError
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 from .accounting_none import AccountingNone
 from .data_error import DataError

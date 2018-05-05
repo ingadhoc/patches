@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 # © 2014-2016 ACSONE SA/NV (<http://acsone.eu>)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from collections import defaultdict
 import logging
 
-from openerp.report import report_sxw
+from odoo.report import report_sxw
 
 from ..models.accounting_none import AccountingNone
 from ..models.data_error import DataError
@@ -13,7 +12,7 @@ from ..models.data_error import DataError
 _logger = logging.getLogger(__name__)
 
 try:
-    from openerp.addons.report_xlsx.report.report_xlsx import ReportXlsx
+    from odoo.addons.report_xlsx.report.report_xlsx import ReportXlsx
 except ImportError:
     _logger.debug("report_xlsx not installed, Excel export non functional")
 

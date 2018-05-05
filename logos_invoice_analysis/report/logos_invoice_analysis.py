@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-from openerp import fields, models
-from openerp import tools
+from odoo import fields, models
+from odoo import tools
 
 
 class AccountInvoiceLineReportLogos(models.Model):

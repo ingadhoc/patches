@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     'name': 'Logos Invoice Analysis',
     'category': 'Account',

@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 # © 2011 Raphaël Valyi, Renato Lima, Guewen Baconnier, Sodexis
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import time
 
-from openerp import api, models, fields, _
-from openerp.exceptions import UserError, ValidationError
-from openerp.tools.safe_eval import safe_eval
+from odoo import api, models, fields, _
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools.safe_eval import safe_eval
 
 
 class SaleException(models.Model):

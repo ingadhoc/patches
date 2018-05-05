@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (c) 2007 Ferran Pegueroles <ferran@pegueroles.com>

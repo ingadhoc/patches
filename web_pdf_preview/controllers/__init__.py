@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #    Web PDF Report Preview & Print
 #    Copyright 2012 wangbuke <wangbuke@gmail.com>
@@ -18,9 +17,9 @@
 #
 ##############################################################################
 
-from openerp.addons.web.controllers.main import Reports, serialize_exception
-from openerp.addons.report.controllers.main import ReportController
-from openerp import http
+from odoo.addons.web.controllers.main import Reports, serialize_exception
+from odoo.addons.report.controllers.main import ReportController
+from odoo import http
 
 
 class WebPdfReports(ReportController):

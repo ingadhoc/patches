@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # © 2004-2009 Tiny SPRL (<http://tiny.be>).
 # © 2014-2015 Serv. Tecnol. Avanzados - Pedro M. Baeza
 # © 2016 ACSONE SA/NV (<http://acsone.eu>)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #    Web PDF Report Preview & Print
 #    Copyright 2014 wangbuke <wangbuke@gmail.com>

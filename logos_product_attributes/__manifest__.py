@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     'name': 'Logos Product Attributes',
     'version': '9.0.1.0.0',

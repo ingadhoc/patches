@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openerp>
+<odoo>
     <data>
 
         <template id="assets_backend" name="mis_builder" inherit_id="web.assets_backend">
@@ -202,4 +202,4 @@
         </record>
 
     </data>
-</openerp>
+</odoo>

@@ -17,7 +17,7 @@
 <!--You should have received a copy of the GNU Affero General Public License-->
 <!--along with this program. If not, see <http://www.gnu.org/licenses/>.    -->
 <!-- ********************************************************************** -->
-<openerp>
+<odoo>
     <data noupdate="1">
 
         <record id="max_attempt_qty" model="ir.config_parameter">
@@ -26,4 +26,4 @@
         </record>
 
     </data>
-</openerp>
+</odoo>

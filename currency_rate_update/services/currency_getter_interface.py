@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 # © 2008-2016 Camptocamp
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import logging
 
 from datetime import datetime
-from openerp import fields
-from openerp.exceptions import except_orm
+from odoo import fields
+from odoo.exceptions import except_orm
 
 _logger = logging.getLogger(__name__)
 
@@ -74,7 +73,7 @@ class CurrencyGetterInterface(object):
 
         For example::
 
-            from openerp.addons.currency_rate_update \
+            from odoo.addons.currency_rate_update \
                 import CurrencyGetterInterface
 
             class MySuperCurrencyGetter(CurrencyGetterInterface):

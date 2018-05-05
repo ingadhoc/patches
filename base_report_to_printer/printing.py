@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (c) 2007 Ferran Pegueroles <ferran@pegueroles.com>
@@ -25,9 +24,9 @@
 import os
 from tempfile import mkstemp
 
-from openerp import models, fields, api
-# from openerp.exceptions import Warning
-from openerp.tools.config import config
+from odoo import models, fields, api
+# from odoo.exceptions import Warning
+from odoo.tools.config import config
 
 import logging
 _logger = logging.getLogger(__name__)

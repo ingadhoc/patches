@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
 # © 2016 Daniel Reis
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api, _
-from openerp import SUPERUSER_ID
-from openerp import tools
+from odoo import models, fields, api, _
+from odoo import SUPERUSER_ID
+from odoo import tools
 from lxml import etree
 from ast import literal_eval
-from openerp.exceptions import ValidationError
+from odoo.exceptions import ValidationError
 
 # Extended name search is only used on some operators
 ALLOWED_OPS = set(['ilike', 'like'])
@@ -88,7 +87,7 @@ class ModelExtended(models.Model):
             name_search_domain = False
             try:
                 name_search_domain = literal_eval(rec.name_search_domain)
-            except Exception, e:
+            except Exception as e:
                 raise ValidationError(_(
                     "Couldn't eval Name Search Domain (%s)") % e)
             if not isinstance(name_search_domain, list):

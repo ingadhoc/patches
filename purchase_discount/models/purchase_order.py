@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 # © 2004-2009 Tiny SPRL (<http://tiny.be>).
 # © 2015 Pedro M. Baeza
 # © 2016 ACSONE SA/NV (<http://acsone.eu>)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from openerp import api, fields, models
-import openerp.addons.decimal_precision as dp
+from odoo import api, fields, models
+import odoo.addons.decimal_precision as dp
 
 
 class PurchaseOrder(models.Model):

@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-from openerp import fields, models
+from odoo import fields, models
 
 
 class res_country_state_town(models.Model):

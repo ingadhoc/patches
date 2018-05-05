@@ -1,5 +1,5 @@
-from openerp.exceptions import ValidationError
-from openerp.addons.sale.tests.test_sale_order import TestSaleOrder
+from odoo.exceptions import ValidationError
+from odoo.addons.sale.tests.test_sale_order import TestSaleOrder
 
 
 class TestSaleException(TestSaleOrder):
