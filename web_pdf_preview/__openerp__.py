@@ -29,5 +29,5 @@
     'data': [
         'views/web_pdf_preview.xml',
     ],
-
+    'installable': False,
 }

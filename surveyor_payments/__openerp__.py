@@ -46,7 +46,7 @@ Allow to register payments on taks and give availability to track them.
     ],
     'test': [
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

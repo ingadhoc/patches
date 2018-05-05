@@ -14,5 +14,5 @@
     'data': ['views/view.xml'],
     "author": "ACSONE SA/NV, 0k.io, Tecnativa, "
               "Odoo Community Association (OCA)",
-    'installable': True,
+    'installable': False,
 }

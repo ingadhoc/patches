@@ -20,5 +20,5 @@
  'license': 'AGPL-3',
  'depends': ['purchase'],
  'data': ['view/purchase_order.xml'],
- 'installable': True,
+ 'installable': False,
  }
