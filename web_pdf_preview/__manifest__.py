@@ -24,7 +24,7 @@
     'author': 'wangbuke@gmail.com,ADHOC SA',
     'website': 'http://buke.github.io',
     'license': 'AGPL-3',
-    'depends': ['report_custom_filename'],
+    'depends': ['base'],
     'data': [
         'views/web_pdf_preview.xml',
     ],
