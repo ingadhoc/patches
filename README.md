@@ -15,9 +15,6 @@ web_pdf_preview:
 web_m2x_options:
     en este commit https://github.com/OCA/web/commit/e37db6412aa4ca85c8ad1635c49e9150a202f5af que hace que si se desactiva el create edit de manera global, no importa que en los pickings se fuerce que permita, no te deja crear registro, por ejemplo esto pasaba en boggio
 
-purchase_discount:
-    tiene algunos backports de v10 y tmb le comentamos parte de codigo por tema de performance (buscar "Parche de ADHOC.")
-
 [//]: # (addons)
 [//]: # (end addons)
 
