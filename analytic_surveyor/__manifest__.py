@@ -19,14 +19,10 @@
 ##############################################################################
 {
     'name': 'Analytic Surveyor',
-    'version': '9.0.1.0.0',
+    'version': '11.0.1.0.0',
     'category': 'Analytic',
     'sequence': 14,
     'summary': '',
-    'description': """
-Analytic Surveyor
-=================
-    """,
     'author': 'ADHOC SA,Odoo Community Association (OCA)',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
@@ -34,6 +30,7 @@ Analytic Surveyor
     ],
     'depends': [
         'project',
+        'contacts',
     ],
     'data': [
         'analytic_view.xml',
@@ -44,7 +41,7 @@ Analytic Surveyor
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': False,
 }

@@ -19,16 +19,11 @@
 ##############################################################################
 {
     'name': 'Surveyor Payments',
-    'version': '9.0.1.0.0',
-    'category': 'Warehouse Management',
+    'version': '11.0.1.0.0',
+    'category': 'Project',
     'sequence': 14,
     'summary': '',
-    'description': """
-Surveyor Payments
-=================
-Allow to register payments on taks and give availability to track them.
-    """,
-    'author': 'ADHOC SA,Odoo Community Association (OCA)',
+    'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'images': [
@@ -45,7 +40,7 @@ Allow to register payments on taks and give availability to track them.
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': False,
 }

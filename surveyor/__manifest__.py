@@ -19,21 +19,18 @@
 ##############################################################################
 {
     'name': 'Surveyor',
-    'version': '9.0.1.0.0',
-    'category': 'Warehouse Management',
+    'version': '11.0.1.0.0',
+    'category': 'Project',
     'sequence': 14,
     'summary': '',
-    'description': """
-Surveyor
-========
-    """,
-    'author': 'ADHOC SA,Odoo Community Association (OCA)',
+    'author': 'ADHOC SA',
     'website': 'www.adhoc.com.ar',
     'license': 'AGPL-3',
     'images': [
     ],
     'depends': [
         'project',
+        'contacts',
     ],
     'data': [
         'project_task_view.xml',
@@ -43,7 +40,7 @@ Surveyor
     ],
     'test': [
     ],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': False,
 }

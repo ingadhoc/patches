@@ -1,8 +1,7 @@
- #-*- coding: utf-8 -*-
 from odoo import fields, models, api
 
 
-class project_task_payment(models.Model):
+class ProjectTaskPayment(models.Model):
     _name = 'project.task.payment'
     # _order = 'date desc'
     _rec_name = 'description'
@@ -16,7 +15,7 @@ class project_task_payment(models.Model):
     amount = fields.Float('Amount', required=True)
 
 
-class project_task(models.Model):
+class ProjectTask(models.Model):
     _inherit = 'project.task'
 
     @api.one
@@ -40,5 +39,3 @@ class project_task(models.Model):
     payment_term_id = fields.Many2one(
         'account.payment.term',
         string='Payment Terms')
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

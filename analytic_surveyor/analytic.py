@@ -1,15 +1,13 @@
-#-*- coding: utf-8 -*-
 from odoo import fields, models
 
 
-class res_country_state_town(models.Model):
+class ResCountryStateTown(models.Model):
     _name = 'res.country.state.town'
-# TODO mover esto a otro modulo
     name = fields.Char('Name', required=True)
     state_id = fields.Many2one('res.country.state', 'State', required=True)
 
 
-class account_analytic_account_lot(models.Model):
+class AccountAnalyticAccountLot(models.Model):
     _name = 'account.analytic.account.lot'
 
     analytic_account_id = fields.Many2one(
@@ -18,7 +16,7 @@ class account_analytic_account_lot(models.Model):
     registration_number = fields.Char('Registration Number', required=True)
 
 
-class account_analytic_account(models.Model):
+class AccountAnalyticAccount(models.Model):
     _inherit = 'account.analytic.account'
 
     file_number = fields.Char('File Number')
@@ -30,5 +28,3 @@ class account_analytic_account(models.Model):
     is_ccu = fields.Boolean('Is CCU?')
     lot_ids = fields.One2many(
         'account.analytic.account.lot', 'analytic_account_id', 'Lots')
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
