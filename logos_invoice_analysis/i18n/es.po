@@ -17,6 +17,11 @@ msgstr ""
 "X-Generator: Poedit 1.5.4\n"
 
 #. module: logos_invoice_analysis
+#: model:ir.model.fields,field_description:logos_invoice_analysis.field_account_invoice_line_report_logos_price_subtotal_signed
+msgid "Amount Signed"
+msgstr "Subtotal en moneda de Compania"
+
+#. module: logos_invoice_analysis
 #: model:ir.actions.act_window,name:logos_invoice_analysis.action_account_invoice_line_report_logos_all
 #: model:ir.ui.menu,name:logos_invoice_analysis.menu_action_account_invoice_line_report_logos_all
 msgid "Analisis de Factura de Logos"

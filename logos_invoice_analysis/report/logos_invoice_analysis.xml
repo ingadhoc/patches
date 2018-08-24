@@ -19,6 +19,7 @@
                     <field name="discount"/>
                     <field name="discount_amount" sum="Total"/>
                     <field name="price_subtotal" sum="Total"/>
+                    <field name="price_subtotal_signed" sum="Total"/>
                     <field name="date_due" invisible="1"/>
                     <field name="state"/>
                     <field name="city" invisible="1"/>

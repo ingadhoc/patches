@@ -159,6 +159,10 @@ class AccountInvoiceLineReportLogos(models.Model):
     #     relation="res.partner.category",
     #     string="Partner Category",
     #     store=False),
+    price_subtotal_signed = fields.Float(
+        'Amount Signed',
+        readonly=True,
+        group_operator="sum")
 
     def init(self, cr):
 
@@ -169,6 +173,8 @@ class AccountInvoiceLineReportLogos(models.Model):
         "account_invoice_line"."id" AS "id",
         "account_invoice_line"."price_unit" AS "price_unit",
         "account_invoice_line"."discount" AS "discount",
+        "account_invoice_line"."price_subtotal_signed" AS
+         "price_subtotal_signed",
         case when "account_invoice"."type" in ('in_refund','out_refund') then
                                -("account_invoice_line"."quantity")
                               else
@@ -179,7 +185,6 @@ class AccountInvoiceLineReportLogos(models.Model):
                               else
                                "account_invoice_line"."price_subtotal"
                               end as "price_subtotal",
-
       -- Campos Calculados
         case when "account_invoice"."type" in ('in_refund','out_refund') then
                                -("price_unit" * "quantity")
