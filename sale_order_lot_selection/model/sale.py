@@ -37,8 +37,8 @@ class SaleOrderLine(models.Model):
     @api.depends('product_id')
     def _compute_available_lot_ids(self):
         for rec in self.filtered(
-                lambda x: x.product_id.tracking == 'lot' and x.order_id.
-                warehouse_id):
+                lambda x: x.product_id.tracking
+                in ['serial', 'lot'] and x.order_id.warehouse_id):
             location = rec.order_id.warehouse_id.lot_stock_id
             quants = self.env['stock.quant'].read_group([
                 ('product_id', '=', rec.product_id.id),
