@@ -21,15 +21,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
 import openerp
 
 from openerp.service.report import self_reports
+from openerp.service import report
 
-original_exp_report = openerp.service.report.exp_report
+original_exp_report = report.exp_report
+original_exp_report_get = report.exp_report_get
 
 
-def exp_report(db, uid, object, ids, datas=None, context=None):
+def new_exp_report(db, uid, object, ids, datas=None, context=None):
     """ Export Report """
     # We can't use the named args because a monkey patch in 'calendar'
     # doesn't use them and use a different name for 'datas'
@@ -38,13 +39,10 @@ def exp_report(db, uid, object, ids, datas=None, context=None):
     return res
 
 
-openerp.service.report.exp_report = exp_report
+report.exp_report = new_exp_report
 
 
-original_exp_report_get = openerp.service.report.exp_report_get
-
-
-def exp_report_get(db, uid, report_id):
+def new_exp_report_get(db, uid, report_id):
     # First we need to know if the module is installed
     registry = openerp.registry(db)
     if registry.get('printing.printer'):
@@ -54,7 +52,7 @@ def exp_report_get(db, uid, report_id):
             report_obj = registry['ir.actions.report.xml']
             report_name = self_reports[report_id]['report_name']
             report = report_obj.search(cr, uid,
-                                       [('report_name', '=', report_name)])
+                                    [('report_name', '=', report_name)])
             if report:
                 report = report_obj.browse(cr, uid, report[0])
                 data = report.behaviour()[report.id]
@@ -88,4 +86,4 @@ def exp_report_get(db, uid, report_id):
     return original_exp_report_get(db, uid, report_id)
 
 
-openerp.service.report.exp_report_get = exp_report_get
+report.exp_report_get = new_exp_report_get
