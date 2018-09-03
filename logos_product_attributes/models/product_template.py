@@ -6,6 +6,33 @@ class ProductTemplate(models.Model):
 
     _inherit = 'product.template'
 
+    author_id = fields.Many2one(
+        'product.attribute.value',
+        compute='_compute_attributes',
+        inverse='_inverse_attributes',
+        store=True,
+        domain=[('attribute_id.name', '=', 'Autor')],
+        string='Autor',
+    )
+
+    editorial_id = fields.Many2one(
+        'product.attribute.value',
+        compute='_compute_attributes',
+        inverse='_inverse_attributes',
+        store=True,
+        domain=[('attribute_id.name', '=', 'Editorial')],
+        string='Editorial',
+    )
+
+    collection_id = fields.Many2one(
+        'product.attribute.value',
+        compute='_compute_attributes',
+        inverse='_inverse_attributes',
+        store=True,
+        domain=[('attribute_id.name', '=', 'Colección')],
+        string='Coleccion',
+    )
+
     @api.multi
     def _inverse_attributes(self):
         for rec in self:
@@ -38,36 +65,8 @@ class ProductTemplate(models.Model):
                 'value_ids': [(4, field_value.id)]
             })
 
-    author_id = fields.Many2one(
-        'product.attribute.value',
-        compute='_compute_attributes',
-        inverse='_inverse_attributes',
-        store=True,
-        domain=[('attribute_id.name', '=', 'Autor')],
-        string='Autor')
-
-    editorial_id = fields.Many2one(
-        'product.attribute.value',
-        compute='_compute_attributes',
-        inverse='_inverse_attributes',
-        store=True,
-        domain=[('attribute_id.name', '=', 'Editorial')],
-        string='Editorial')
-
-    collection_id = fields.Many2one(
-        'product.attribute.value',
-        compute='_compute_attributes',
-        inverse='_inverse_attributes',
-        store=True,
-        domain=[('attribute_id.name', '=', 'Colección')],
-        string='Coleccion')
-
-    @api.multi
     @api.depends(
-        # 'attribute_line_ids',
-        # 'attribute_line_ids.value_ids',
         'attribute_line_ids.value_ids.name',
-        # 'attribute_line_ids.value_ids.attribute_id',
         'attribute_line_ids.value_ids.attribute_id.name',
     )
     def _compute_attributes(self):
@@ -80,19 +79,3 @@ class ProductTemplate(models.Model):
             rec.author_id = get_value(rec, 'Autor')
             rec.editorial_id = get_value(rec, 'Editorial')
             rec.collection_id = get_value(rec, 'Colección')
-
-
-class ProductAttributeValue(models.Model):
-    _inherit = "product.attribute.value"
-
-    def name_get(self, cr, uid, ids, context=None):
-        """Este metodo lo sobreescribimos porque no nos esta pasando en el
-        contexto el show_attribute False, supongo que debe tener que ver con un
-        error de la nueva api
-        """
-        if not context:
-            context = {}
-        new_context = context.copy()
-        new_context['show_attribute'] = False
-        return super(ProductAttributeValue, self).name_get(
-            cr, uid, ids, context=new_context)

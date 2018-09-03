@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<odoo>
+    <!-- Product Product Views -->
+<!--         <record id="product_normal_form_view" model="ir.ui.view">
+            <field name="name">product_price_currency.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view" />
+            <field name="arch" type="xml">
+                <field name="lst_price" position="after">
+                    <field name="sale_price_currency_id"/>
+                </field>
+            </field>
+        </record> -->
+        <record id="product_price_currency_tree_view" model="ir.ui.view">
+            <field name="name">product_price_currency.tree</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view" />
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="author_id" context="{'show_attribute': False}"/>
+                    <field name="editorial_id" context="{'show_attribute': False}"/>
+                    <field name="collection_id" context="{'show_attribute': False}"/>
+                </field>
+            </field>
+        </record>
+<!--         <record id="product_kanban_view" model="ir.ui.view">
+            <field name="name">product_price_currency.kanban</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_kanban_view" />
+            <field name="arch" type="xml">
+                <li position="inside">
+                    <field name="sale_price_currency_id"/>
+                </li>
+            </field>
+        </record> -->
+
+</odoo>
