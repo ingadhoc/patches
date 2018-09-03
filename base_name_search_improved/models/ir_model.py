@@ -79,6 +79,11 @@ class IrModel(models.Model):
     name_search_domain = fields.Char(
     )
 
+    @api.constrains(
+        'name_search_ids', 'name_search_domain', 'add_smart_search')
+    def update_search_wo_restart(self):
+        self.clear_caches()
+
     @api.constrains('name_search_domain')
     def check_name_search_domain(self):
         for rec in self.filtered('name_search_domain'):
