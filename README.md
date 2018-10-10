@@ -15,6 +15,10 @@ web_pdf_preview:
 web_m2x_options:
     en este commit https://github.com/OCA/web/commit/e37db6412aa4ca85c8ad1635c49e9150a202f5af que hace que si se desactiva el create edit de manera global, no importa que en los pickings se fuerce que permita, no te deja crear registro, por ejemplo esto pasaba en boggio
 
+mgmtsystem_nonconformity:
+    agregado desde este PR https://github.com/OCA/management-system/pull/217/files
+    TODO borrar cuando se apruebe el PR
+
 [//]: # (addons)
 [//]: # (end addons)
 
