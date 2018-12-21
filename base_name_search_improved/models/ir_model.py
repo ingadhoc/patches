@@ -11,9 +11,39 @@ ALLOWED_OPS = set(['ilike', 'like'])
 
 
 @tools.ormcache(skiparg=0)
+def _get_model_obj(self):
+    """Add compatibility to search with website search, This is required
+    because portal and public user has not permissions to access ir.model and
+    we can not call it with sudo from the website controller, if we do, then
+    the public and portal users will be able to access to all products even
+    when their are unpublish (they will have admin permissions not only in the
+    smart search but in all the shop)"""
+    from_website = self._context.get('website_id', False)
+    model_obj = self.env['ir.model']
+    if from_website:
+        model_obj = self.env['ir.model'].sudo()
+    return model_obj
+
+
+@tools.ormcache(skiparg=0)
+def _get_model_obj(self):
+    """Add compatibility to search with website search, This is required
+    because portal and public user has not permissions to access ir.model and
+    we can not call it with sudo from the website controller, if we do, then
+    the public and portal users will be able to access to all products even
+    when their are unpublish (they will have admin permissions not only in the
+    smart search but in all the shop)"""
+    from_website = self._context.get('website_id', False)
+    model_obj = self.env['ir.model']
+    if from_website:
+        model_obj = self.env['ir.model'].sudo()
+    return model_obj
+
+
+@tools.ormcache(skiparg=0)
 def _get_rec_names(self):
     "List of fields to search into"
-    model = self.env['ir.model'].search(
+    model = _get_model_obj(self).search(
         [('model', '=', str(self._name))])
     rec_name = [self._rec_name] or []
     other_names = model.name_search_ids.mapped('name')
@@ -30,7 +60,7 @@ def _get_add_smart_search(self):
 @tools.ormcache(skiparg=0)
 def _get_name_search_domain(self):
     "Add Smart Search on search views"
-    name_search_domain = self.env['ir.model'].search(
+    name_search_domain = _get_model_obj(self).search(
         [('model', '=', str(self._name))]).name_search_domain
     if name_search_domain:
         return literal_eval(name_search_domain)
