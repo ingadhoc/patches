@@ -26,21 +26,6 @@ def _get_model_obj(self):
 
 
 @tools.ormcache(skiparg=0)
-def _get_model_obj(self):
-    """Add compatibility to search with website search, This is required
-    because portal and public user has not permissions to access ir.model and
-    we can not call it with sudo from the website controller, if we do, then
-    the public and portal users will be able to access to all products even
-    when their are unpublish (they will have admin permissions not only in the
-    smart search but in all the shop)"""
-    from_website = self._context.get('website_id', False)
-    model_obj = self.env['ir.model']
-    if from_website:
-        model_obj = self.env['ir.model'].sudo()
-    return model_obj
-
-
-@tools.ormcache(skiparg=0)
 def _get_rec_names(self):
     "List of fields to search into"
     model = _get_model_obj(self).search(
