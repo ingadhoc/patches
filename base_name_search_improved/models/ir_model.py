@@ -11,24 +11,9 @@ ALLOWED_OPS = set(['ilike', 'like'])
 
 
 @tools.ormcache(skiparg=0)
-def _get_model_obj(self):
-    """Add compatibility to search with website search, This is required
-    because portal and public user has not permissions to access ir.model and
-    we can not call it with sudo from the website controller, if we do, then
-    the public and portal users will be able to access to all products even
-    when their are unpublish (they will have admin permissions not only in the
-    smart search but in all the shop)"""
-    from_website = self._context.get('website_id', False)
-    model_obj = self.env['ir.model']
-    if from_website:
-        model_obj = self.env['ir.model'].sudo()
-    return model_obj
-
-
-@tools.ormcache(skiparg=0)
 def _get_rec_names(self):
     "List of fields to search into"
-    model = _get_model_obj(self).search(
+    model = self.env['ir.model'].search(
         [('model', '=', str(self._name))])
     rec_name = [self._rec_name] or []
     other_names = model.name_search_ids.mapped('name')
@@ -45,7 +30,7 @@ def _get_add_smart_search(self):
 @tools.ormcache(skiparg=0)
 def _get_name_search_domain(self):
     "Add Smart Search on search views"
-    name_search_domain = _get_model_obj(self).search(
+    name_search_domain = self.env['ir.model'].search(
         [('model', '=', str(self._name))]).name_search_domain
     if name_search_domain:
         return literal_eval(name_search_domain)
@@ -122,9 +107,10 @@ class IrModel(models.Model):
                             operator='ilike', limit=100):
                 limit = limit or 0
                 enabled = self.env.context.get('name_search_extended', True)
+                superself = self.sudo()
                 if enabled:
                     # we add domain
-                    args = args or [] + _get_name_search_domain(self)
+                    args = args or [] + _get_name_search_domain(superself)
                 # Perform standard name search
                 res = name_search.origin(
                     self, name=name, args=args, operator=operator,
@@ -134,7 +120,7 @@ class IrModel(models.Model):
                 #       Customer->More->Portal Access Management
                 if name and enabled and operator in ALLOWED_OPS:
                     # Support a list of fields to search on
-                    all_names = _get_rec_names(self)
+                    all_names = _get_rec_names(superself)
                     base_domain = args or []
                     # Try regular search on each additional search field
                     for rec_name in all_names[1:]:
@@ -210,8 +196,9 @@ class IrModel(models.Model):
             enabled = self.env.context.get('name_search_extended', True)
             name = value
             if name and enabled and operator in ALLOWED_OPS:
-                all_names = _get_rec_names(self)
-                domain = _get_name_search_domain(self)
+                superself = self.sudo()
+                all_names = _get_rec_names(superself)
+                domain = _get_name_search_domain(superself)
                 for word in name.split():
                     word_domain = []
                     for rec_name in all_names:
