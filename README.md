@@ -7,6 +7,9 @@
 
 Odoo patches, fixes, modules overwrite and other stuff that should be deleted :) Edit
 
+account_analytic_default:
+    * backport from odoo v12 to have support for analytic tags (with a fix, search for "# fix/patch" on the module)
+
 web_pdf_preview:
     * backport from https://bitbucket.org/biosbillingsoftware/odoo-web-pdf-preview-print/overview
     * con algunos cambios en js para que no de error
