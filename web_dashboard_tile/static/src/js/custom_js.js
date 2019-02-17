@@ -1,47 +1,30 @@
-//  @@@ web_dashboard_tile custom JS @@@
-//#############################################################################
-//    
-//    Copyright (C) 2010-2013 OpenERP s.a. (<http://www.openerp.com>)
-//    Copyright (C) 2014 initOS GmbH & Co. KG (<http://initos.com>)
-//    Copyright (C) 2018 Iván Todorovich (<ivan.todorovich@gmail.com>)
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as published
-//    by the Free Software Foundation, either version 3 of the License, or
-//    (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-//#############################################################################
-
-odoo.define('web_dashboard_tile', function (require) {
+odoo.define('website_dashboard_tile.tile', function (require) {
     "use strict";
 
-    var core = require('web.core');
-    var data = require('web.data');
-    var FavoriteMenu = require('web.FavoriteMenu');
     var ActionManager = require('web.ActionManager');
-    var ViewManager = require('web.ViewManager');
-    var Model = require('web.DataModel');
-    var session = require('web.session');
+    var Context = require('web.Context');
+    var core = require('web.core');
+    var Domain = require('web.Domain');
+    var FavoriteMenu = require('web.FavoriteMenu');
     var pyeval = require('web.pyeval');
+    var ViewManager = require('web.ViewManager');
+    var session = require('web.session');
+
     var _t = core._t;
     var QWeb = core.qweb;
 
-
     FavoriteMenu.include({
-
+        /**
+         * We manually add the 'add to dashboard tile' feature in the searchview.
+         *
+         * @override
+         */
         start: function () {
+            this._super();
             var self = this;
-            if (this.action_id === undefined) {
-                return this._super();
-            }
+            // if(this.action_id === undefined) {
+            //     return this._super();
+            // }
             var am = this.findAncestor(function (a) {
                 return a instanceof ActionManager;
             });
@@ -57,31 +40,26 @@ odoo.define('web_dashboard_tile', function (require) {
                 this.$add_dashboard_tile_input.val(title);
                 this.$add_dashboard_tile_link.click(function (e) {
                     e.preventDefault();
-                    self.toggle_dashboard_tile_menu();
+                    self._toggleDashboardTileMenu();
                 });
-                this.$add_dashboard_tile_btn.click(this.proxy('add_dashboard_tile'));
-            }
-            return this._super();
-        },
-
-        toggle_dashboard_tile_menu: function (is_open) {
-            this.$add_dashboard_tile_link
-                .toggleClass('o_closed_menu', !(_.isUndefined(is_open)) ? !is_open : undefined)
-                .toggleClass('o_open_menu', is_open);
-            this.$add_to_dashboard_tile.toggle(is_open);
-            if (this.$add_dashboard_tile_link.hasClass('o_open_menu')) {
-                this.$add_dashboard_tile_input.focus();
+                this.$add_dashboard_tile_btn.click(this.proxy('_addDashboardTile'));
             }
         },
 
-        close_menus: function () {
-            if (this.add_to_dashboard_tile_available) {
-                this.toggle_dashboard_tile_menu(false);
-            }
-            this._super();
-        },
+        //--------------------------------------------------------------------------
+        // Private
+        //--------------------------------------------------------------------------
 
-        add_dashboard_tile: function () {
+        /**
+         * This is the main function for actually saving the dashboard. This method
+         * is supposed to call the route /board/add_to_dashboard with proper
+         * information.
+         *
+         * @private
+         * @returns {Deferred}
+         */
+        _addDashboardTile: function () {
+            console.log("_addDashboardTile");
             var self = this;
             var search_data = this.searchview.build_search_data();
             var context = new Context(this.searchview.dataset.get_context() || []);
@@ -95,26 +73,20 @@ odoo.define('web_dashboard_tile', function (require) {
             context.add({
                 group_by: pyeval.eval('groupbys', search_data.groupbys || [])
             });
-
-            context.add(this.view_manager.active_view.controller.get_context());
-
+            context.add(this.view_manager.active_view.controller.getContext());
             var c = pyeval.eval('context', context);
             for (var k in c) {
                 if (c.hasOwnProperty(k) && /^search_default_/.test(k)) {
                     delete c[k];
                 }
             }
-
-
-            this.toggle_dashboard_tile_menu(false);
-
+            this._toggleDashboardTileMenu(false);
             c.dashboard_merge_domains_contexts = false;
-            var d = pyeval.eval('domain', domain),
-                tile = new Model('tile.tile'),
-                name = self.$add_dashboard_tile_input.val();
+
+            var name = self.$add_dashboard_tile_input.val();
 
             var private_filter = !this.$('#oe_searchview_custom_public').prop('checked');
-            if (_.isEmpty(name)) {
+            if (_.isEmpty(name)){
                 this.do_warn(_t("Error"), _t("Filter name is required."));
                 return false;
             }
@@ -127,21 +99,50 @@ odoo.define('web_dashboard_tile', function (require) {
                 delete ctx[key];
             });
 
-            var vals = {
-                name: name,
-                user_id: private_filter ? session.uid : false,
-                model_id: self.view_manager.active_view.controller.model,
-                //context: context,
-                domain: d,
-                action_id: self.action_id || false,
-            };
-
-            // FIXME: current context?
-            return tile.call('add', [vals]).done(function (id) {
-                self.do_notify(_t("Success"), _t("Tile is created"));
-            });
-
+            return self._rpc({
+                    route: '/board/add_to_dashboard_tile',
+                    params: {
+                        action_id: self.action_id || false,
+                        domain: domain,
+                        view_mode: self.view_manager.active_view.type,
+                        name: name,
+                        user_id: private_filter ? session.uid : false,
+                        model_name: self.view_manager.active_view.controller.modelName,
+                    },
+                })
+                .then(function (r) {
+                    if (r) {
+                        self.do_notify(
+                            _.str.sprintf(_t("'%s' added to dashboard tile"), name),
+                            _t('Please refresh your browser for the changes to take effect.')
+                        );
+                    } else {
+                        self.do_warn(_t("Could not add filter to dashboard tile"));
+                    }
+                });
+        },
+        /**
+         * @override
+         * @private
+         */
+        _closeMenus: function () {
+            if (this.add_to_dashboard_tile_available) {
+                this._toggleDashboardTileMenu(false);
+            }
+            this._super();
+        },
+        /**
+         * @private
+         * @param {undefined|false} isOpen
+         */
+        _toggleDashboardTileMenu: function (isOpen) {
+            this.$add_dashboard_tile_link
+                .toggleClass('o_closed_menu', !(_.isUndefined(isOpen)) ? !isOpen : undefined)
+                .toggleClass('o_open_menu', isOpen);
+            this.$add_to_dashboard_tile.toggle(isOpen);
+            if (this.$add_dashboard_tile_link.hasClass('o_open_menu')) {
+                this.$add_dashboard_tile_input.focus();
+            }
         },
     });
-
 });

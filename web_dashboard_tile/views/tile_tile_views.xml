@@ -182,7 +182,7 @@
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="action_tree_dashboard_tile">
+    <record id="action_tree_dashboard_tile" model="ir.actions.act_window">
         <field name="name">Dashboard</field>
         <field name="res_model">tile.tile</field>
         <field name="view_type">form</field>

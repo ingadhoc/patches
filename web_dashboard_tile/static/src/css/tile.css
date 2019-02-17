@@ -54,7 +54,7 @@
 /* Favorites menu in control panel */
 .o_add_to_dashboard_tile {
     /* hidden by default */
-    display: none; 
+    display: none;
 }
 
 /* Make dropdown menu button not affect text flow */
@@ -62,4 +62,9 @@
     float: none;
     position: absolute;
     right: 8px;
+}
+
+.o_add_to_dashboard_title {
+    display: none;
+    .o-search-options-dropdown-custom-li;
 }

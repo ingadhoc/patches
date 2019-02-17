@@ -1,8 +1,7 @@
-# © 2010-2013 odoo s.a. (<http://odoo.com>).
-# © 2014 initOS GmbH & Co. KG (<http://www.initos.com>).
-# © 2015-Today GRAP
-# License AGPL-3 - See http://www.gnu.org/licenses/agpl-3.0.html
-
+##############################################################################
+# For copyright and license notices, see __manifest__.py file in module root
+# directory
+##############################################################################
 import datetime
 import time
 from dateutil.relativedelta import relativedelta
@@ -271,6 +270,7 @@ class TileTile(models.Model):
                 ['view_type', 'view_mode', 'type'])[0])
         return res
 
+    # TODO this method can be deleted
     @api.model
     def add(self, vals):
         if 'model_id' in vals and not vals['model_id'].isdigit():

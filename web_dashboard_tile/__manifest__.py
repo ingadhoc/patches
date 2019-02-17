@@ -4,7 +4,7 @@
 {
     "name": "Dashboard Tile",
     "summary": "Add Tiles to Dashboard",
-    "version": "11.0.1.0.0",
+    "version": "11.0.1.1.0",
     "depends": [
         'web',
         'board',
@@ -17,9 +17,11 @@
     "category": "web",
     'license': 'AGPL-3',
     'contributors': [
+        'Odoo S.A.',
         'initOS GmbH & Co. KG',
         'GRAP',
-        'Iván Todorovich <ivan.todorovich@gmail.com>'
+        'Iván Todorovich <ivan.todorovich@gmail.com>',
+        'ADHOC SA',
     ],
     'data': [
         'views/tile_tile_views.xml',

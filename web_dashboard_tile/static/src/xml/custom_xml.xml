@@ -4,10 +4,10 @@
         <a href="#">Add to Dashboard Tile</a>
     </li>
     <li class="o_add_to_dashboard_tile">
-        <input class="o_add_to_dashboard_input" type="text"/>
+        <input class="o_add_to_dashboard_title_input" type="text"/>
     </li>
     <li class="o_add_to_dashboard_tile">
-        <button type="button" class="btn btn-primary btn-sm o_add_to_dashboard_button">Add</button>
+        <button type="button" class="btn btn-primary btn-sm o_add_to_dashboard_title_button">Add</button>
     </li>
 </t>
 </template>
