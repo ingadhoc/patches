@@ -22,6 +22,9 @@ mgmtsystem_nonconformity:
     agregado desde este PR https://github.com/OCA/management-system/pull/217/files
     TODO borrar cuando se apruebe el PR
 
+auth_brute_force:
+    disable this module by adding a 1 on res_users methods. This is till we fix the module compatibility with saas_client and auth_oauth. We also hide de menu for now because it is not being used for nothing.
+
 [//]: # (addons)
 [//]: # (end addons)
 
