@@ -17,6 +17,6 @@ class StockMove(models.Model):
     def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
         vals = super(StockMove, self)._prepare_move_line_vals(
             quantity=quantity, reserved_quant=reserved_quant)
-        if reserved_quant:
+        if reserved_quant and self.sale_line_id.lot_id:
             vals['lot_id'] = self.sale_line_id.lot_id.id
         return vals
