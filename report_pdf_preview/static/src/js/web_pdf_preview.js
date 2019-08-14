@@ -15,31 +15,29 @@ odoo.define('report_pdf_preview.report', function (require) {
     var wkhtmltopdf_state;
 
     ActionManager.include({
-        ir_actions_report: function (action, options) {
+        _executeReportAction: function (action, options) {
             var self = this;
             action = _.clone(action);
             var _super = _.bind(this._super, this);
 
             if (action.report_type === 'qweb-pdf') {
-                (wkhtmltopdf_state = wkhtmltopdf_state || this._rpc({route: '/report/check_wkhtmltopdf'})).then(function (state) {
+                return this.call('report', 'checkWkhtmltopdf').then(function (state) {
                     var active_ids_path = '/' + action.context.active_ids.join(',');
                     var url = '/report/pdf/' + action.report_name + active_ids_path;
                     var filename = action.report_name;
                     var title = action.display_name;
                     var def = $.Deferred()
-                    var dialog=PreviewDialog.createPreviewDialog(self, url, false, "pdf", title);
-                    $.when(dialog,dialog._opened).then(function (dialog) {
-                        var a=1;
+                    var dialog = PreviewDialog.createPreviewDialog(self, url, false, "pdf", title);
+                    $.when(dialog, dialog._opened).then(function (dialog) {
+                        var a = 1;
                         dialog.$modal.find('.preview-download').hide();
 
                     })
                     framework.unblockUI();
                 });
-
-                return;
             } else if (action.report_type === 'aeroo') {
-                this._rpc({route: '/report/check_aeroo_pdf/' + action.report_name}).then(function(result){
-                    if (result === true){
+                return this._rpc({route: '/report/check_aeroo_pdf/' + action.report_name}).then(function(result){
+                    if (result === false){
                         var active_ids_path = '/' + action.context.active_ids.join(',');
                         var url = '/report/aeroo/' + action.report_name + active_ids_path;
                         var filename = action.report_name;
@@ -51,14 +49,14 @@ odoo.define('report_pdf_preview.report', function (require) {
                             dialog.$modal.find('.preview-download').hide();
                         })
                         framework.unblockUI();
-                        return;
                     } else {
                         return _super(action, options);
                     }
-                }.bind(_super));
+                });
             } else {
                 return self._super(action, options);
             }
+
         }
     });
 
