@@ -4,7 +4,7 @@
 {
     "name": "Dashboard Tile",
     "summary": "Add Tiles to Dashboard",
-    "version": "11.0.1.2.0",
+    "version": "12.0.1.2.0",
     "depends": [
         'web',
         'board',
