@@ -25,6 +25,9 @@ mgmtsystem_nonconformity:
 auth_brute_force:
     disable this module by adding a 1 on res_users methods. This is till we fix the module compatibility with saas_client and auth_oauth. We also hide de menu for now because it is not being used for nothing.
 
+website_sale_breadcrumb:
+    modulo agregado desde https://www.odoo.com/apps/modules/11.0/website_sale_breadcrumb/
+
 [//]: # (addons)
 [//]: # (end addons)
 
