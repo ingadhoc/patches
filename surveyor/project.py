@@ -3,6 +3,7 @@ from odoo import fields, models
 
 class ResCountryStateTown(models.Model):
     _name = 'res.country.state.town'
+    _description = 'res.country.state.town'
 
     name = fields.Char('Name', required=True)
     state_id = fields.Many2one('res.country.state', 'State', required=True)

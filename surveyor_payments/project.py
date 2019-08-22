@@ -3,6 +3,7 @@ from odoo import fields, models, api
 
 class ProjectTaskPayment(models.Model):
     _name = 'project.task.payment'
+    _description = 'project.task.payment'
     # _order = 'date desc'
     _rec_name = 'description'
 
