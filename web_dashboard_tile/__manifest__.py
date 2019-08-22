@@ -30,9 +30,6 @@
         'security/web_dashboard_tile_security.xml',
     ],
     'demo': [
-        'demo/res_groups.yml',
-        'demo/tile_category.yml',
-        'demo/tile_tile.yml',
     ],
     'qweb': [
         'static/src/xml/custom_xml.xml',
