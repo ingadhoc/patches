@@ -37,7 +37,7 @@ odoo.define('report_pdf_preview.report', function (require) {
                 });
             } else if (action.report_type === 'aeroo') {
                 return this._rpc({route: '/report/check_aeroo_pdf/' + action.report_name}).then(function(result){
-                    if (result === false){
+                    if (result === true){
                         var active_ids_path = '/' + action.context.active_ids.join(',');
                         var url = '/report/aeroo/' + action.report_name + active_ids_path;
                         var filename = action.report_name;
