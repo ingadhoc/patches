@@ -8,27 +8,19 @@
     'summary': 'Manage skills, knowledge and resumé of your employees',
     'depends': [
         'hr',
-        'resource',
     ],
     'data': [
-        # from hr
-        'views/hr_employee_public_views.xml',
-
-        # from hr_skills
         'security/ir.model.access.csv',
         'security/hr_skills_security.xml',
-        'views/hr_views.xml',
-        'views/hr_templates.xml',
+        'views/hr_resume_line_view.xml',
+        'views/hr_skill_view.xml',
+        'views/hr_employee_views.xml',
         'data/hr_resume_data.xml',
     ],
     'demo': [
         'data/hr_resume_demo.xml',
         'data/hr.employee.skill.csv',
         'data/hr.resume.line.csv',
-    ],
-    'qweb': [
-        'static/src/xml/resume_templates.xml',
-        'static/src/xml/skills_templates.xml',
     ],
     'installable': True,
     'application': True,

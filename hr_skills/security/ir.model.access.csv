@@ -1,5 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_hr_employee_public_user,hr.employee_public,model_hr_employee_public,base.group_user,1,0
 access_hr_resume_line,hr.resume.line,model_hr_resume_line,hr.group_hr_user,1,1,1,1
 access_hr_resume_line_employee,hr.resume.line.employee,model_hr_resume_line,base.group_user,1,1,1,1
 access_hr_resume_line_type,hr.resume.line.type,model_hr_resume_line_type,hr.group_hr_user,1,1,1,1

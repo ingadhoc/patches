@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="resume_line_view_search" model="ir.ui.view">
+        <field name="name">hr.resume.search</field>
+        <field name="model">hr.resume.line</field>
+        <field name="arch" type="xml">
+            <search string="Résume">
+                <filter string="Resumé line type" name="group_by_resume_line_type" context="{'group_by':'line_type'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="resume_line_view_form" model="ir.ui.view">
+        <field name="name">hr.resume.line.form</field>
+        <field name="model">hr.resume.line</field>
+        <field name="arch" type="xml">
+            <form string="Resumé">
+                <div class="oe_title">
+                    <label for="name" class="oe_edit_only"/>
+                    <h1>
+                        <field name="name" placeholder="Title" required="True"/>
+                    </h1>
+                </div>
+                <group>
+                    <group>
+                        <field name="line_type_id"/>
+                        <field name="display_type" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="date_start" required="True"/>
+                        <field name="date_end"/>
+                    </group>
+                </group>
+                <field name="description" placeholder="Description"/>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_resume_line_type_tree_view" model="ir.ui.view">
+        <field name="name">hr.resume.line.type.tree.view</field>
+        <field name="model">hr.resume.line.type</field>
+        <field name="arch" type="xml">
+            <tree name="Resumé Line Types" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_resume_type_action" model="ir.actions.act_window">
+        <field name="name">Resumé Line Types</field>
+        <field name="res_model">hr.resume.line.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+            id="menu_human_resources_configuration_resume"
+            name="Resumé"
+            parent="hr.menu_human_resources_configuration"
+            sequence="4"
+            groups="base.group_no_one"/>
+
+    <menuitem
+        id="hr_resume_line_type_menu"
+        name="Types"
+        action="hr_resume_type_action"
+        parent="hr_skills.menu_human_resources_configuration_resume"
+        sequence="3"
+        groups="base.group_no_one"/>
+
+</odoo>
