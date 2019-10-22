@@ -5,7 +5,8 @@ from odoo import models, fields, api, tools, _
 from lxml import etree
 from ast import literal_eval
 from odoo.exceptions import ValidationError
-
+import logging
+_logger = logging.getLogger(__name__)
 # Extended name search is only used on some operators
 ALLOWED_OPS = set(['ilike', 'like'])
 
@@ -218,11 +219,14 @@ class IrModel(models.Model):
         if not hasattr(models.BaseModel, '_search_smart_search'):
             models.BaseModel._search_smart_search = _search_smart_search
 
+        _logger.info('Patching fields_view_get on BaseModel')
+        models.BaseModel._patch_method(
+            'fields_view_get', patch_fields_view_get())
+
         for model in self.sudo().search(self.ids or []):
             Model = self.env.get(model.model)
             if Model is not None:
                 Model._patch_method('name_search', make_name_search())
-                Model._patch_method('fields_view_get', patch_fields_view_get())
 
         return super(IrModel, self)._register_hook()
 
