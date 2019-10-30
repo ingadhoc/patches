@@ -15,7 +15,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 {
     'name': 'Purchase All Shipments',
-    'version': '11.0.1.0.0',
+    'version': '12.0.1.0.0',
     'author': "Camptocamp,Odoo Community Association (OCA), ADHOC SA",
     'category': 'Purchases',
     'license': 'AGPL-3',
