@@ -24,8 +24,11 @@ def _get_rec_names(self):
 @tools.ormcache(skiparg=0)
 def _get_add_smart_search(self):
     "Add Smart Search on search views"
-    return self.env['ir.model'].search(
-        [('model', '=', str(self._name))]).add_smart_search
+    model = self.env['ir.model'].search([('model', '=', str(self._name))])
+    # Run only if module is installed
+    if hasattr(model, 'add_smart_search'):
+        return model.add_smart_search
+    return False
 
 
 @tools.ormcache(skiparg=0)
