@@ -6,8 +6,7 @@ odoo.define('website_dashboard_tile.tile', function (require) {
     var core = require('web.core');
     var Domain = require('web.Domain');
     var FavoriteMenu = require('web.FavoriteMenu');
-    var pyeval = require('web.pyeval');
-    var ViewManager = require('web.ViewManager');
+    var pyUtils = require('web.py_utils');
     var session = require('web.session');
 
     var _t = core._t;
@@ -15,21 +14,12 @@ odoo.define('website_dashboard_tile.tile', function (require) {
 
     FavoriteMenu.include({
         /**
-         * We manually add the 'add to dashboard tile' feature in the searchview.
-         *
          * @override
          */
         start: function () {
             this._super();
             var self = this;
-            // if(this.action_id === undefined) {
-            //     return this._super();
-            // }
-            var am = this.findAncestor(function (a) {
-                return a instanceof ActionManager;
-            });
-            if (am && am.get_inner_widget() instanceof ViewManager) {
-                this.view_manager = am.get_inner_widget();
+            if (this.action.type === 'ir.actions.act_window') {
                 this.add_to_dashboard_tile_available = true;
                 this.$('.o_favorites_menu').append(QWeb.render('SearchView.addtodashboardtile'));
                 this.$add_to_dashboard_tile = this.$('.o_add_to_dashboard_tile');
@@ -63,18 +53,26 @@ odoo.define('website_dashboard_tile.tile', function (require) {
             var self = this;
             var search_data = this.searchview.build_search_data();
             var context = new Context(this.searchview.dataset.get_context() || []);
-            var domain = this.searchview.dataset.get_domain() || [];
+            var domain = this.action.domain ? this.action.domain.slice(0) : [];
 
             _.each(search_data.contexts, context.add, context);
             _.each(search_data.domains, function (d) {
                 domain.push.apply(domain, Domain.prototype.stringToArray(d));
             });
 
-            context.add({
-                group_by: pyeval.eval('groupbys', search_data.groupbys || [])
+
+            var am = this.findAncestor(function (a) {
+                return a instanceof ActionManager;
             });
-            context.add(this.view_manager.active_view.controller.getContext());
-            var c = pyeval.eval('context', context);
+
+            var currentAction = am.getCurrentAction();
+            var controller = am.getCurrentController();
+
+            context.add({
+                group_by: pyUtils.eval('groupbys', search_data.groupbys || [])
+            });
+            context.add(controller.widget.getContext());
+            var c = pyUtils.eval('context', context);
             for (var k in c) {
                 if (c.hasOwnProperty(k) && /^search_default_/.test(k)) {
                     delete c[k];
@@ -86,7 +84,7 @@ odoo.define('website_dashboard_tile.tile', function (require) {
             var name = self.$add_dashboard_tile_input.val();
 
             var private_filter = !this.$('#oe_searchview_custom_public').prop('checked');
-            if (_.isEmpty(name)){
+            if (_.isEmpty(name)) {
                 this.do_warn(_t("Error"), _t("Filter name is required."));
                 return false;
             }
@@ -102,18 +100,19 @@ odoo.define('website_dashboard_tile.tile', function (require) {
             return self._rpc({
                     route: '/board/add_to_dashboard_tile',
                     params: {
-                        action_id: self.action_id || false,
+                        action_id: currentAction.id || false,
                         domain: domain,
-                        view_mode: self.view_manager.active_view.type,
+                        view_mode: controller.viewType,
                         name: name,
                         user_id: private_filter ? session.uid : false,
-                        model_name: self.view_manager.active_view.controller.modelName,
+                        model_name: currentAction.res_model,
                     },
                 })
                 .then(function (r) {
                     if (r) {
                         self.do_notify(
-                            _.str.sprintf(_t("'%s' added to dashboard tile"), name)
+                            _.str.sprintf(_t("'%s' added to dashboard tile"), name),
+                            _t('Your new tile is now available at the dashboard tile app.')
                         );
                     } else {
                         self.do_warn(_t("Could not add filter to dashboard tile"));
