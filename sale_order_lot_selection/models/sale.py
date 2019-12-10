@@ -24,8 +24,10 @@ class SaleOrderLine(models.Model):
                 ('location_id', 'child_of', location.id),
                 ('quantity', '>', 0),
                 ('lot_id', '!=', False),
-            ], ['lot_id'], 'lot_id')
-            available_lot_ids = [quant['lot_id'][0] for quant in quants]
+            ], ['lot_id', 'reserved_quantity', 'quantity'], 'lot_id')
+            available_lot_ids = [
+                quant['lot_id'][0] for quant in quants
+                if quant['reserved_quantity'] < quant['quantity']]
         self.lot_id = False
         return {
             'domain': {'lot_id': [('id', 'in', available_lot_ids)]}
@@ -66,8 +68,7 @@ class SaleOrder(models.Model):
 
     @api.multi
     def action_confirm(self):
-        res = super(SaleOrder, self.with_context(sol_lot_id=True))\
-            .action_confirm()
+        res = super(SaleOrder, self).action_confirm()
         for line in self.order_line:
             if line.lot_id:
                 unreserved_moves = line.move_ids.filtered(
