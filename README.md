@@ -11,6 +11,9 @@ account_analytic_default:
     * with some fixes, search for "# fix/patch" on the module
 
 
+website_sale_breadcrumb:
+    modulo agregado desde https://www.odoo.com/apps/modules/11.0/website_sale_breadcrumb/
+
 [//]: # (addons)
 [//]: # (end addons)
 
